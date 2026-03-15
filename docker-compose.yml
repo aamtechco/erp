@@ -1,0 +1,78 @@
+# ============================================================
+# Docker Compose — ERP System (local development)
+# Usage: docker compose up --build
+# ============================================================
+
+version: '3.9'
+
+services:
+
+  # ── PostgreSQL ──────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: erp_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: erp_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── Backend (Node.js / Express) ─────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: erp_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      DATABASE_URL: postgresql://postgres:password@db:5432/erp_db
+      JWT_SECRET: change-me-in-production-use-a-long-random-string
+      JWT_EXPIRES_IN: 7d
+      FRONTEND_URL: http://localhost:3000
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      EMAIL_FROM: "ERP Office <noreply@office.com>"
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # ── Frontend (React / Vite) ─────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: erp_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:5000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host
+
+volumes:
+  pgdata:
