@@ -5,23 +5,29 @@ import useAuthStore from '../lib/authStore'
 import toast from 'react-hot-toast'
 
 export default function LoginPage() {
-  const [email, setEmail]       = useState('')
+  const [accountType, setAccountType] = useState('client') // 'client' | 'user'
+  const [registerNumber, setRegisterNumber] = useState('')
   const [password, setPassword] = useState('')
   const [showPw, setShowPw]     = useState(false)
   const [error, setError]       = useState('')
-  const { login, loading }      = useAuthStore()
+  const { loginAsClient, loginAsUser, loading } = useAuthStore()
   const navigate                = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    const result = await login(email, password)
-    if (result.success) {
-      toast.success('Welcome back!')
-      navigate('/')
-    } else {
-      setError(result.error)
-    }
+    const rn = registerNumber.trim()
+    if (!rn) return setError('Register number is required')
+
+    const result =
+      accountType === 'client'
+        ? await loginAsClient(rn)
+        : await loginAsUser(rn, password)
+
+    if (!result.success) return setError(result.error || 'Login failed')
+
+    toast.success('Welcome!')
+    navigate(accountType === 'client' ? '/clients/dashboard' : '/users/dashboard')
   }
 
   return (
@@ -65,42 +71,72 @@ export default function LoginPage() {
           </div>
 
           <h2 className="text-2xl font-bold text-surface-900">Sign in</h2>
-          <p className="text-surface-500 text-sm mt-1">Enter your credentials to continue</p>
+          <p className="text-surface-500 text-sm mt-1">Enter your register number to continue</p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">
             <div>
-              <label className="label">Email address</label>
+              <label className="label">Account type</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setAccountType('client')}
+                  className={`btn w-full justify-center py-2 ${
+                    accountType === 'client'
+                      ? 'bg-surface-900 text-white hover:bg-surface-900'
+                      : 'bg-white text-surface-700 border border-surface-200 hover:bg-surface-50'
+                  }`}
+                >
+                  Client
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAccountType('user')}
+                  className={`btn w-full justify-center py-2 ${
+                    accountType === 'user'
+                      ? 'bg-surface-900 text-white hover:bg-surface-900'
+                      : 'bg-white text-surface-700 border border-surface-200 hover:bg-surface-50'
+                  }`}
+                >
+                  User
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="label">Register number</label>
               <input
-                type="email"
+                type="text"
                 className="input"
-                placeholder="you@office.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="e.g. REG-100234"
+                value={registerNumber}
+                onChange={(e) => setRegisterNumber(e.target.value)}
                 required
                 autoFocus
               />
             </div>
 
-            <div>
-              <label className="label">Password</label>
-              <div className="relative">
-                <input
-                  type={showPw ? 'text' : 'password'}
-                  className="input pr-10"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600"
-                >
-                  {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+            {accountType === 'user' ? (
+              <div>
+                <label className="label">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPw ? 'text' : 'password'}
+                    className="input pr-10"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw(!showPw)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600"
+                  >
+                    {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : null}
 
             {error && (
               <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
@@ -114,12 +150,12 @@ export default function LoginPage() {
               disabled={loading}
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : null}
-              {loading ? 'Signing in…' : 'Sign in'}
+              {loading ? 'Signing in…' : accountType === 'client' ? 'Enter client dashboard' : 'Enter user dashboard'}
             </button>
           </form>
 
           <p className="text-xs text-surface-400 mt-6 text-center">
-            Default: admin@office.com / Admin@1234
+            Clients: no password required. Users: password required.
           </p>
         </div>
       </div>

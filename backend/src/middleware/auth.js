@@ -18,7 +18,23 @@ const authenticate = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Fetch fresh user data from DB
+    const subjectType = decoded.type || 'user';
+
+    if (subjectType === 'client') {
+      const result = await query(
+        'SELECT id, name, email, status FROM clients WHERE id = $1',
+        [decoded.id]
+      );
+
+      if (!result.rows.length || result.rows[0].status !== 'active') {
+        return res.status(401).json({ error: 'Client not found or inactive' });
+      }
+
+      req.user = { ...result.rows[0], role: 'client' };
+      return next();
+    }
+
+    // Default: system user
     const result = await query(
       'SELECT id, name, email, role, is_active FROM users WHERE id = $1',
       [decoded.id]

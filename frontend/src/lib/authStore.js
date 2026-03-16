@@ -12,6 +12,57 @@ const useAuthStore = create((set, get) => ({
   loading: false,
 
   /**
+   * Lightweight session for client dashboard (no password).
+   */
+  loginAsClient: async (registerNumber) => {
+    set({ loading: true })
+    try {
+      const { data } = await api.post('/auth/login-register', {
+        accountType: 'client',
+        registerNumber,
+      })
+      localStorage.setItem('erp_token', data.token)
+      localStorage.setItem('erp_user', JSON.stringify(data.user))
+      set({ user: data.user, token: data.token, loading: false })
+      return { success: true }
+    } catch (err) {
+      set({ loading: false })
+      return {
+        success: false,
+        error: err.response?.data?.error || 'Login failed',
+      }
+    }
+  },
+
+  /**
+   * Lightweight session for user dashboard (password required).
+   */
+  loginAsUser: async (registerNumber, password) => {
+    set({ loading: true })
+    try {
+      if (!password) {
+        return { success: false, error: 'Password is required' }
+      }
+
+      const { data } = await api.post('/auth/login-register', {
+        accountType: 'user',
+        registerNumber,
+        password,
+      })
+      localStorage.setItem('erp_token', data.token)
+      localStorage.setItem('erp_user', JSON.stringify(data.user))
+      set({ user: data.user, token: data.token, loading: false })
+      return { success: true }
+    } catch (err) {
+      set({ loading: false })
+      return {
+        success: false,
+        error: err.response?.data?.error || 'Login failed',
+      }
+    }
+  },
+
+  /**
    * Login: POST /api/auth/login
    * Persists token + user to localStorage
    */

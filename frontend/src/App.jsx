@@ -3,6 +3,8 @@ import useAuthStore from './lib/authStore'
 import AppLayout from './components/layout/AppLayout'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
+import ClientDashboardPage from './pages/ClientDashboardPage'
+import UserDashboardPage from './pages/UserDashboardPage'
 import ClientsPage from './pages/ClientsPage'
 import ClientDetailPage from './pages/ClientDetailPage'
 import TasksPage from './pages/TasksPage'
@@ -31,11 +33,13 @@ export default function App() {
       {/* Protected (inside shell layout) */}
       <Route path="/" element={<PrivateRoute><AppLayout /></PrivateRoute>}>
         <Route index element={<DashboardPage />} />
+        <Route path="clients/dashboard" element={<ClientDashboardPage />} />
         <Route path="clients" element={<ClientsPage />} />
         <Route path="clients/:id" element={<ClientDetailPage />} />
         <Route path="tasks" element={<TasksPage />} />
         <Route path="reminders" element={<RemindersPage />} />
         <Route path="reports" element={<ReportsPage />} />
+        <Route path="users/dashboard" element={<UserDashboardPage />} />
         <Route path="users" element={<UsersPage />} />
       </Route>
 
