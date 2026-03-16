@@ -15,6 +15,7 @@ const taskRoutes      = require('./routes/tasks');
 const reminderRoutes  = require('./routes/reminders');
 const reportRoutes    = require('./routes/reports');
 const dashboardRoutes = require('./routes/dashboard');
+const clientPortalRoutes = require('./routes/client');
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use('/api/tasks',      taskRoutes);
 app.use('/api/reminders',  reminderRoutes);
 app.use('/api/reports',    reportRoutes);
 app.use('/api/dashboard',  dashboardRoutes);
+app.use('/api/client',     clientPortalRoutes);
 
 // ── 404 handler ───────────────────────────────────────────────
 app.use((req, res) => {

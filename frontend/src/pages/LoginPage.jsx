@@ -17,17 +17,17 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     const rn = registerNumber.trim()
-    if (!rn) return setError('Register number is required')
+    if (!rn) return setError('رقم السجل مطلوب')
 
     const result =
       accountType === 'client'
         ? await loginAsClient(rn)
         : await loginAsUser(rn, password)
 
-    if (!result.success) return setError(result.error || 'Login failed')
+    if (!result.success) return setError(result.error || 'فشل تسجيل الدخول')
 
-    toast.success('Welcome!')
-    navigate(accountType === 'client' ? '/clients/dashboard' : '/users/dashboard')
+    toast.success('مرحبًا بك!')
+    navigate(accountType === 'client' ? '/client/tasks' : '/users/dashboard')
   }
 
   return (
@@ -36,26 +36,26 @@ export default function LoginPage() {
       <div className="hidden lg:flex lg:w-1/2 bg-surface-950 flex-col justify-between p-12">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold">
-            AE
+            AAM
           </div>
-          <span className="text-white font-semibold text-lg">AccountEdge</span>
+          <span className="text-white font-semibold text-lg">مكتب أبوالمجد عبدالشافى</span>
         </div>
 
         <div>
           <h1 className="text-4xl font-bold text-white leading-snug">
-            Office management,<br />
-            <span className="text-brand-400">simplified.</span>
+            إدارة المكتب<br />
+            <span className="text-brand-400">بشكل أسهل.</span>
           </h1>
           <p className="text-white/50 mt-4 text-base max-w-sm">
-            Manage clients, track tasks, set reminders, and generate reports — all in one place.
+            إدارة العملاء، متابعة المهام، إعداد التذكيرات، وإنشاء التقارير — كل ذلك في مكان واحد.
           </p>
         </div>
 
         <div className="grid grid-cols-3 gap-4">
-          {['Clients', 'Tasks', 'Reports'].map((f) => (
+          {['العملاء', 'المهام', 'التقارير'].map((f) => (
             <div key={f} className="bg-white/5 border border-white/10 rounded-xl p-4">
               <p className="text-white/80 text-sm font-medium">{f}</p>
-              <p className="text-white/30 text-xs mt-0.5">Fully integrated</p>
+              <p className="text-white/30 text-xs mt-0.5">متكامل بالكامل</p>
             </div>
           ))}
         </div>
@@ -66,8 +66,8 @@ export default function LoginPage() {
         <div className="w-full max-w-sm">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-sm">AE</div>
-            <span className="font-semibold">AccountEdge ERP</span>
+            <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-sm">AAM</div>
+            <span className="font-semibold">مكتب أبوالمجد عبدالشافى</span>
           </div>
 
           <h2 className="text-2xl font-bold text-surface-900">تسجيل الدخول</h2>

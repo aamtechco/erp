@@ -78,12 +78,12 @@ export function Modal({ open, onClose, title, children, size = 'md' }) {
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className={`card w-full ${sizeMap[size]} shadow-xl animate-page`}>
+      <div className={`card w-full ${sizeMap[size]} shadow-xl animate-page max-h-[90vh] flex flex-col`}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-surface-100">
           <h2 className="text-base font-semibold">{title}</h2>
           <button onClick={onClose} className="btn-ghost p-1 text-surface-400 hover:text-surface-700">✕</button>
         </div>
-        <div className="p-5">{children}</div>
+        <div className="p-5 overflow-y-auto">{children}</div>
       </div>
     </div>
   )

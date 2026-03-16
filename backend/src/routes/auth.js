@@ -94,16 +94,16 @@ router.post(
 
     try {
       if (accountType === 'client') {
-        const ok = await hasColumn('clients', 'register_number');
+        const ok = await hasColumn('clients', 'tax_id');
         if (!ok) {
           return res.status(501).json({
-            error: 'Client register-number login is not configured yet',
-            hint: "Add a 'register_number' column to the 'clients' table, then retry.",
+            error: 'تسجيل دخول العميل برقم السجل غير مُفعّل بعد',
+            hint: "أضف العمود 'tax_id' إلى جدول 'clients' ثم أعد المحاولة.",
           });
         }
 
         const result = await query(
-          'SELECT id, name, email, status, register_number FROM clients WHERE register_number = $1',
+          'SELECT id, name, email, status, tax_id FROM clients WHERE tax_id = $1',
           [registerNumber]
         );
 
@@ -128,7 +128,7 @@ router.post(
             name: client.name,
             email: client.email,
             role: 'client',
-            registerNumber: client.register_number,
+            registerNumber: client.tax_id,
           },
         });
       }

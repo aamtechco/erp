@@ -30,11 +30,44 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS clients (
   id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name            VARCHAR(200) NOT NULL,
-  register_number VARCHAR(100) UNIQUE,
+  client_number   VARCHAR(100),
+  full_name       VARCHAR(200),
+  mobile          VARCHAR(50),
+  median_name     VARCHAR(200),
+  median_mobile   VARCHAR(50),
+  agreed_payment  NUMERIC,
+  id_number       VARCHAR(100),
+  tax_number      VARCHAR(100),
+  commercial_reg_number VARCHAR(150),
+  activity_field  TEXT,
+  commercial_reg_office VARCHAR(200),
+  commercial_reg_renewal_date DATE,
+  tax_office      VARCHAR(200),
+  vat_tax_office  VARCHAR(200),
+  ebill           VARCHAR(50),
+  capital_amount  NUMERIC,
+  work_start_date DATE,
+  work_end_date   DATE,
+  last_tax_examine_date DATE,
+  last_vat_examine_date DATE,
+  vat_start_date  DATE,
+  platform_subscription TEXT,
+  platform_renewal_date DATE,
+  subscription_amount NUMERIC,
+  subscription_renewal_date DATE,
+  subscription_last_charged_at DATE,
+  gmail_email     VARCHAR(255),
+  gmail_password  TEXT,
+  tax_vat_email   VARCHAR(255),
+  tax_vat_password TEXT,
+  ebill_email     VARCHAR(255),
+  ebill_password  TEXT,
+  portal_email    VARCHAR(255),
+  portal_password TEXT,
   email           VARCHAR(255),
   phone           VARCHAR(50),
   company         VARCHAR(200),
-  tax_id          VARCHAR(100),
+  tax_id          VARCHAR(100) UNIQUE,
   address         TEXT,
   notes           TEXT,
   status          VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'prospect')),
@@ -54,12 +87,25 @@ CREATE TABLE IF NOT EXISTS tasks (
   client_id        UUID REFERENCES clients(id) ON DELETE CASCADE,
   assigned_to      UUID REFERENCES users(id) ON DELETE SET NULL,
   created_by       UUID REFERENCES users(id) ON DELETE SET NULL,
+  amount           NUMERIC,
+  is_paid          BOOLEAN DEFAULT FALSE,
+  paid_at          TIMESTAMPTZ,
   status           VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed', 'cancelled')),
   priority         VARCHAR(10) DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high', 'urgent')),
   due_date         DATE,
   completed_at     TIMESTAMPTZ,
   created_at       TIMESTAMPTZ DEFAULT NOW(),
   updated_at       TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Task notes
+CREATE TABLE IF NOT EXISTS task_notes (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  task_id     UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  author_type VARCHAR(10) NOT NULL CHECK (author_type IN ('client','user')),
+  author_id   UUID NOT NULL,
+  note        TEXT NOT NULL,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- ============================================================
@@ -119,6 +165,8 @@ CREATE INDEX IF NOT EXISTS idx_tasks_due_date      ON tasks(due_date);
 CREATE INDEX IF NOT EXISTS idx_reminders_notify_at ON reminders(notify_at) WHERE sent = FALSE;
 CREATE INDEX IF NOT EXISTS idx_reminders_task_id   ON reminders(task_id);
 CREATE INDEX IF NOT EXISTS idx_clients_status      ON clients(status);
+CREATE INDEX IF NOT EXISTS idx_clients_tax_id      ON clients(tax_id);
+CREATE INDEX IF NOT EXISTS idx_clients_subscription_renewal ON clients(subscription_renewal_date);
 CREATE INDEX IF NOT EXISTS idx_audit_log_user_id   ON audit_log(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_log_created   ON audit_log(created_at);
 

@@ -9,13 +9,23 @@ import { Link } from 'react-router-dom'
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user)
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['dashboard'],
     queryFn: () => api.get('/dashboard').then((r) => r.data),
     refetchInterval: 120_000,
   })
 
   if (isLoading) return <PageSpinner />
+  if (isError || !data) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold text-surface-900">لوحة التحكم</h1>
+        <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          تعذر تحميل بيانات لوحة التحكم حاليًا. تأكد من اتصال الخادم وحالة قاعدة البيانات.
+        </p>
+      </div>
+    )
+  }
 
   const { stats, upcoming_tasks, pending_reminders, recent_activity } = data
 

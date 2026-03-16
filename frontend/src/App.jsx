@@ -1,10 +1,12 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import useAuthStore from './lib/authStore'
 import AppLayout from './components/layout/AppLayout'
+import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import ClientDashboardPage from './pages/ClientDashboardPage'
 import UserDashboardPage from './pages/UserDashboardPage'
+import ClientTasksPage from './pages/ClientTasksPage'
 import ClientsPage from './pages/ClientsPage'
 import ClientDetailPage from './pages/ClientDetailPage'
 import TasksPage from './pages/TasksPage'
@@ -28,6 +30,7 @@ export default function App() {
   return (
     <Routes>
       {/* Public */}
+      <Route path="/home" element={<PublicRoute><HomePage /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
 
       {/* Protected (inside shell layout) */}
@@ -41,6 +44,7 @@ export default function App() {
         <Route path="reports" element={<ReportsPage />} />
         <Route path="users/dashboard" element={<UserDashboardPage />} />
         <Route path="users" element={<UsersPage />} />
+        <Route path="client/tasks" element={<ClientTasksPage />} />
       </Route>
 
       {/* Fallback */}

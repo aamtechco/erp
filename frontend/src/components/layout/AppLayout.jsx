@@ -8,7 +8,7 @@ import useAuthStore from '../../lib/authStore'
 import NotificationBell from '../ui/NotificationBell'
 
 const NAV = [
-  { to: '/',          icon: LayoutDashboard, label: 'لوحة التحكم',  end: true },
+  { to: '/',          icon: LayoutDashboard, label: 'لوحة التحكم', end: true },
   { to: '/clients',   icon: Users,           label: 'العملاء' },
   { to: '/tasks',     icon: CheckSquare,     label: 'المهام' },
   { to: '/reminders', icon: Bell,            label: 'التذكيرات' },
@@ -33,21 +33,19 @@ export default function AppLayout() {
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 h-16 border-b border-white/10">
         <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-sm">
-          AE
+          AAM
         </div>
         <div>
-          <div className="font-semibold text-sm leading-tight">AccountEdge</div>
-          <div className="text-xs text-white/40 leading-tight">ERP System</div>
+          <div className="font-semibold text-sm leading-tight">مكتب أبوالمجد عبدالشافى</div>
+          <div className="text-xs text-white/40 leading-tight">نظام ERP</div>
         </div>
       </div>
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        {NAV.map(({ to, icon: Icon, label, end }) => (
+        {user?.role === 'client' ? (
           <NavLink
-            key={to}
-            to={to}
-            end={end}
+            to="/client/tasks"
             onClick={() => setSidebarOpen(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
@@ -57,10 +55,31 @@ export default function AppLayout() {
               }`
             }
           >
-            <Icon size={16} />
-            {label}
+            <CheckSquare size={16} />
+            مهامي
           </NavLink>
-        ))}
+        ) : (
+          <>
+            {NAV.map(({ to, icon: Icon, label, end }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={end}
+                onClick={() => setSidebarOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                  ${isActive
+                    ? 'bg-brand-600 text-white'
+                    : 'text-white/60 hover:text-white hover:bg-white/8'
+                  }`
+                }
+              >
+                <Icon size={16} />
+                {label}
+              </NavLink>
+            ))}
+          </>
+        )}
 
         {/* Admin-only */}
         {['admin'].includes(user?.role) && (
