@@ -8,11 +8,11 @@ import useAuthStore from '../../lib/authStore'
 import NotificationBell from '../ui/NotificationBell'
 
 const NAV = [
-  { to: '/',          icon: LayoutDashboard, label: 'Dashboard',  end: true },
-  { to: '/clients',   icon: Users,           label: 'Clients' },
-  { to: '/tasks',     icon: CheckSquare,     label: 'Tasks' },
-  { to: '/reminders', icon: Bell,            label: 'Reminders' },
-  { to: '/reports',   icon: BarChart3,       label: 'Reports' },
+  { to: '/',          icon: LayoutDashboard, label: 'لوحة التحكم',  end: true },
+  { to: '/clients',   icon: Users,           label: 'العملاء' },
+  { to: '/tasks',     icon: CheckSquare,     label: 'المهام' },
+  { to: '/reminders', icon: Bell,            label: 'التذكيرات' },
+  { to: '/reports',   icon: BarChart3,       label: 'التقارير' },
 ]
 
 export default function AppLayout() {
@@ -76,7 +76,7 @@ export default function AppLayout() {
             }
           >
             <UserCog size={16} />
-            Users
+            المستخدمون
           </NavLink>
         )}
       </nav>

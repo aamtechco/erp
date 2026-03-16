@@ -70,12 +70,12 @@ export default function LoginPage() {
             <span className="font-semibold">AccountEdge ERP</span>
           </div>
 
-          <h2 className="text-2xl font-bold text-surface-900">Sign in</h2>
-          <p className="text-surface-500 text-sm mt-1">Enter your register number to continue</p>
+          <h2 className="text-2xl font-bold text-surface-900">تسجيل الدخول</h2>
+          <p className="text-surface-500 text-sm mt-1">أدخل رقم السجل للمتابعة</p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">
             <div>
-              <label className="label">Account type</label>
+              <label className="label">نوع الحساب</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
@@ -86,7 +86,7 @@ export default function LoginPage() {
                       : 'bg-white text-surface-700 border border-surface-200 hover:bg-surface-50'
                   }`}
                 >
-                  Client
+                  عميل
                 </button>
                 <button
                   type="button"
@@ -97,17 +97,17 @@ export default function LoginPage() {
                       : 'bg-white text-surface-700 border border-surface-200 hover:bg-surface-50'
                   }`}
                 >
-                  User
+                  مستخدم
                 </button>
               </div>
             </div>
 
             <div>
-              <label className="label">Register number</label>
+              <label className="label">رقم السجل</label>
               <input
                 type="text"
                 className="input"
-                placeholder="e.g. REG-100234"
+                placeholder="مثال: REG-100234"
                 value={registerNumber}
                 onChange={(e) => setRegisterNumber(e.target.value)}
                 required
@@ -117,7 +117,7 @@ export default function LoginPage() {
 
             {accountType === 'user' ? (
               <div>
-                <label className="label">Password</label>
+                <label className="label">كلمة المرور</label>
                 <div className="relative">
                   <input
                     type={showPw ? 'text' : 'password'}
@@ -150,12 +150,16 @@ export default function LoginPage() {
               disabled={loading}
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : null}
-              {loading ? 'Signing in…' : accountType === 'client' ? 'Enter client dashboard' : 'Enter user dashboard'}
+              {loading
+                ? 'جارٍ تسجيل الدخول…'
+                : accountType === 'client'
+                  ? 'دخول لوحة تحكم العميل'
+                  : 'دخول لوحة تحكم المستخدم'}
             </button>
           </form>
 
           <p className="text-xs text-surface-400 mt-6 text-center">
-            Clients: no password required. Users: password required.
+            العملاء: لا تحتاج كلمة مرور. المستخدمون: كلمة المرور مطلوبة.
           </p>
         </div>
       </div>

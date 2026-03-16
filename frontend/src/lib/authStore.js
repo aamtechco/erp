@@ -29,7 +29,7 @@ const useAuthStore = create((set, get) => ({
       set({ loading: false })
       return {
         success: false,
-        error: err.response?.data?.error || 'Login failed',
+        error: err.response?.data?.error || 'فشل تسجيل الدخول',
       }
     }
   },
@@ -57,7 +57,7 @@ const useAuthStore = create((set, get) => ({
       set({ loading: false })
       return {
         success: false,
-        error: err.response?.data?.error || 'Login failed',
+        error: err.response?.data?.error || 'فشل تسجيل الدخول',
       }
     }
   },

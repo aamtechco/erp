@@ -108,10 +108,10 @@ router.post(
         );
 
         if (!result.rows.length) {
-          return res.status(401).json({ error: 'Invalid client register number' });
+        return res.status(401).json({ error: 'رقم سجل العميل غير صحيح' });
         }
         if (result.rows[0].status !== 'active') {
-          return res.status(401).json({ error: 'Client is inactive' });
+        return res.status(401).json({ error: 'هذا العميل غير نشط' });
         }
 
         const client = result.rows[0];
@@ -135,7 +135,7 @@ router.post(
 
       // accountType === 'user'
       if (!password) {
-        return res.status(400).json({ error: 'Password is required' });
+        return res.status(400).json({ error: 'كلمة المرور مطلوبة' });
       }
 
       const ok = await hasColumn('users', 'register_number');
@@ -152,14 +152,14 @@ router.post(
       );
 
       if (!result.rows.length) {
-        return res.status(401).json({ error: 'Invalid user register number or password' });
+        return res.status(401).json({ error: 'رقم سجل المستخدم أو كلمة المرور غير صحيحة' });
       }
 
       const user = result.rows[0];
       const valid = await bcrypt.compare(password, user.password_hash);
 
       if (!valid) {
-        return res.status(401).json({ error: 'Invalid user register number or password' });
+        return res.status(401).json({ error: 'رقم سجل المستخدم أو كلمة المرور غير صحيحة' });
       }
 
       const token = jwt.sign(
@@ -180,7 +180,7 @@ router.post(
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: 'Server error' });
+      return res.status(500).json({ error: 'خطأ في الخادم، حاول مرة أخرى لاحقًا' });
     }
   }
 );

@@ -6,15 +6,16 @@ export default function UserDashboardPage() {
   return (
     <div className="animate-page space-y-4">
       <div className="page-header">
-        <h1 className="page-title">User Dashboard</h1>
+        <h1 className="page-title">لوحة تحكم المستخدم</h1>
       </div>
 
       <div className="card p-5">
         <p className="text-sm text-surface-600">
-          Signed in as user: <span className="font-medium text-surface-900">{user?.registerNumber || '—'}</span>
+          تم تسجيل الدخول كمستخدم برقم السجل:{' '}
+          <span className="font-medium text-surface-900">{user?.registerNumber || '—'}</span>
         </p>
         <p className="text-sm text-surface-500 mt-2">
-          This is a placeholder dashboard. Next, we can validate credentials and fetch user permissions.
+          هذه لوحة تحكم تجريبية، يمكن لاحقًا التحقق من الصلاحيات وتحميل بيانات المستخدم.
         </p>
       </div>
     </div>
