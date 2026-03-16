@@ -107,8 +107,11 @@ router.post(
           [registerNumber]
         );
 
-        if (!result.rows.length || result.rows[0].status !== 'active') {
-          return res.status(401).json({ error: 'Invalid register number' });
+        if (!result.rows.length) {
+          return res.status(401).json({ error: 'Invalid client register number' });
+        }
+        if (result.rows[0].status !== 'active') {
+          return res.status(401).json({ error: 'Client is inactive' });
         }
 
         const client = result.rows[0];
@@ -149,14 +152,14 @@ router.post(
       );
 
       if (!result.rows.length) {
-        return res.status(401).json({ error: 'Invalid credentials' });
+        return res.status(401).json({ error: 'Invalid user register number or password' });
       }
 
       const user = result.rows[0];
       const valid = await bcrypt.compare(password, user.password_hash);
 
       if (!valid) {
-        return res.status(401).json({ error: 'Invalid credentials' });
+        return res.status(401).json({ error: 'Invalid user register number or password' });
       }
 
       const token = jwt.sign(

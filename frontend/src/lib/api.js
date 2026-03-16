@@ -24,11 +24,20 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const status = err.response?.status
+    const requestUrl = err.config?.url || ''
+    const isAuthCall =
+      requestUrl.includes('/auth/login') ||
+      requestUrl.includes('/auth/login-register')
+
+    if (status === 401) {
       localStorage.removeItem('erp_token')
       localStorage.removeItem('erp_user')
-      window.location.href = '/login'
-    } else if (err.response?.status >= 500) {
+      const alreadyOnLogin = window.location?.pathname === '/login'
+      if (!alreadyOnLogin && !isAuthCall) {
+        window.location.href = '/login'
+      }
+    } else if (status >= 500) {
       toast.error('Server error. Please try again.')
     }
     return Promise.reject(err)
