@@ -62,7 +62,14 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error('Migration failed:', err.message);
+  console.error('Migration failed:', {
+    message: err?.message,
+    code: err?.code,
+    detail: err?.detail,
+    hint: err?.hint,
+    where: err?.where,
+    stack: err?.stack,
+  });
   process.exit(1);
 });
 
