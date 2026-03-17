@@ -111,15 +111,18 @@ router.get('/:id', async (req, res) => {
 // ── POST /api/clients ─────────────────────────────────────────
 router.post('/',
   requireRole('admin', 'accountant'),
-  body('name').trim().notEmpty().withMessage('Name is required'),
+  // name may come from full_name when Arabic form uses الاسم الكامل only
+  body('name')
+    .customSanitizer((value, { req }) => String(value || '').trim() || String(req.body.full_name || '').trim())
+    .notEmpty().withMessage('الاسم مطلوب'),
   body('tax_id')
-    .optional()
-    .matches(/^\d{9}$/).withMessage('Tax ID must be exactly 9 digits'),
-  body('email').optional().isEmail().normalizeEmail(),
+    .optional({ values: 'falsy' })
+    .matches(/^\d{9}$/).withMessage('الرقم الضريبي 9 أرقام'),
+  body('email').optional({ values: 'falsy' }).isEmail().normalizeEmail(),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array(), error: errors.array()[0]?.msg || 'طلب غير صالح' });
     }
 
     let {
@@ -137,6 +140,8 @@ router.post('/',
     // Normalize numeric fields (empty string -> null)
     if (agreed_payment === '') agreed_payment = null;
     if (capital_amount === '') capital_amount = null;
+    if (tax_id === '' || tax_id == null) tax_id = null;
+    if (email === '' || email == null) email = null;
 
     try {
       const result = await query(
@@ -241,8 +246,11 @@ router.delete(
 // ── PUT /api/clients/:id ──────────────────────────────────────
 router.put('/:id',
   requireRole('admin', 'accountant'),
-  body('name').optional().trim().notEmpty(),
-  body('email').optional().isEmail().normalizeEmail(),
+  body('name').optional({ values: 'falsy' }).trim().notEmpty().withMessage('الاسم مطلوب'),
+  body('email').optional({ values: 'falsy' }).isEmail().normalizeEmail(),
+  body('tax_id')
+    .optional({ values: 'falsy' })
+    .matches(/^\d{9}$/).withMessage('الرقم الضريبي 9 أرقام'),
   async (req, res) => {
     let {
       name, email, phone, company, tax_id, address, notes, status,

@@ -28,12 +28,27 @@ const allowedOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL ||
   .map((s) => s.trim())
   .filter(Boolean);
 
+const isOriginAllowed = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes('*')) return true;
+  if (allowedOrigins.includes(origin)) return true;
+
+  // Support wildcard entries like "*.vercel.app"
+  for (const entry of allowedOrigins) {
+    if (entry.startsWith('*.')) {
+      const suffix = entry.slice(1); // ".vercel.app"
+      if (origin.endsWith(suffix)) return true;
+    }
+  }
+  return false;
+};
+
 const corsOptions = {
   origin: (origin, cb) => {
     // Non-browser requests (no Origin header)
     if (!origin) return cb(null, true);
-    if (allowedOrigins.includes(origin)) return cb(null, true);
-    return cb(null, false);
+    if (isOriginAllowed(origin)) return cb(null, true);
+    return cb(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
