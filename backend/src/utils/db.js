@@ -1,34 +1,31 @@
 /**
  * PostgreSQL Connection Pool
- * Optimized for Supabase + Railway deployment
+ * Fully optimized for Supabase + Railway deployment
  */
 
 const { Pool } = require('pg');
 
+// Determine environment
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Determine connection config
-let poolConfig;
-
-if (process.env.DATABASE_URL) {
-  // Production (Railway + Supabase)
-  poolConfig = {
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  };
-} else {
-  // Local development fallback
-  poolConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT) || 5432,
-    database: process.env.DB_NAME || 'erp_db',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'password',
-    ssl: false,
-  };
-}
+// Connection configuration
+const poolConfig = process.env.DATABASE_URL
+  ? {
+      // Production (Railway + Supabase)
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false, // Supabase requires SSL
+      },
+    }
+  : {
+      // Local development fallback
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT) || 5432,
+      database: process.env.DB_NAME || 'erp_db',
+      user: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASSWORD || 'password',
+      ssl: false,
+    };
 
 const pool = new Pool(poolConfig);
 
@@ -53,19 +50,15 @@ const pool = new Pool(poolConfig);
 
 /**
  * Execute a parameterized query
- * @param {string} text
- * @param {Array} params
+ * @param {string} text - SQL query
+ * @param {Array} params - Query parameters
  */
-const query = (text, params) => {
-  return pool.query(text, params);
-};
+const query = (text, params) => pool.query(text, params);
 
 /**
- * Get a client for transactions
+ * Get a client from the pool (for transactions)
  */
-const getClient = () => {
-  return pool.connect();
-};
+const getClient = () => pool.connect();
 
 module.exports = {
   query,
